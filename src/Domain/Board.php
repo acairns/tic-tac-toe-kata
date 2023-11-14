@@ -2,8 +2,6 @@
 
 namespace AndrewCairns\Tictactoe\Domain;
 
-use PhpParser\Builder\Property;
-
 class Board
 {
     private const SIZE = 3;
