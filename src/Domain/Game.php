@@ -13,9 +13,9 @@ class Game
         $this->turn = Marker::X;
     }
 
-    public function takeTurn(int $row, int $column): bool
+    public function takeTurn(Coordinate $coordinate): bool
     {
-        $this->board->placeMarker($row, $column, $this->turn);
+        $this->board->placeMarker($coordinate, $this->turn);
 
         if ($this->board->getWinner() === $this->turn) {
             return true;

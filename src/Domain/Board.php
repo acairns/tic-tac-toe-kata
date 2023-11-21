@@ -4,39 +4,26 @@ namespace AndrewCairns\Tictactoe\Domain;
 
 class Board
 {
-    private const SIZE = 3;
+    public const SIZE = 3;
 
     private \SplFixedArray $squares;
 
     public function __construct()
     {
-        $this->squares = new \SplFixedArray(3);
+        $this->squares = new \SplFixedArray(self::SIZE);
 
-        $this->squares[0] = new \SplFixedArray(3);
-        $this->squares[1] = new \SplFixedArray(3);
-        $this->squares[2] = new \SplFixedArray(3);
+        foreach (range(0, Board::SIZE - 1) as $rowIndex)
+        {
+            $this->squares[$rowIndex] = new \SplFixedArray(self::SIZE);
 
-        $this->squares[0][0] = new Square();
-        $this->squares[0][1] = new Square();
-        $this->squares[0][2] = new Square();
-        $this->squares[1][0] = new Square();
-        $this->squares[1][1] = new Square();
-        $this->squares[1][2] = new Square();
-        $this->squares[2][0] = new Square();
-        $this->squares[2][1] = new Square();
-        $this->squares[2][2] = new Square();
+            foreach (range(0, Board::SIZE - 1) as $columnIndex) {
+                $this->squares[$rowIndex][$columnIndex] = new Square();
+            }
+        }
     }
 
-    public function placeMarker(int $row, int $column, Marker $marker): void
+    public function placeMarker(Coordinate $coordinate, Marker $marker): void
     {
-        if ($row >= $this->squares->getSize()) {
-            throw new \OutOfBoundsException();
-        }
-
-        if ($column >= $this->squares[$row]->getSize()) {
-            throw new \OutOfBoundsException();
-        }
-
         if ($this->getWinner()) {
             throw new GameIsOver();
         }
@@ -46,7 +33,7 @@ class Board
         }
 
         /** @var Square $square */
-        $square = $this->squares[$row][$column];
+        $square = $this->getSquare($coordinate);
         $square->placeMarker($marker);
 
         // throw exception if there is a winner
@@ -70,36 +57,9 @@ class Board
     public function getWinner(): ?Marker
     {
         $checks = [
-
-            // Rows
-            [
-                [0,0], [0,1], [0,2]
-            ],
-            [
-                [1,0], [1,1], [1,2]
-            ],
-            [
-                [2,0], [2,1], [2,2]
-            ],
-
-            // Columns
-            [
-                [0,0], [1,0], [2,0]
-            ],
-            [
-                [0,1], [1,1], [2,1]
-            ],
-            [
-                [0,2], [1,2], [2,2]
-            ],
-
-            // Diagonal
-            [
-                [0,0], [1,1], [2,2]
-            ],
-            [
-                [0,2], [1,1], [2,0]
-            ]
+            ...Coordinate::rows(),
+            ...Coordinate::columns(),
+            ...Coordinate::diagonals(),
         ];
 
         foreach($checks as $coordinates) {
@@ -113,9 +73,9 @@ class Board
         return null;
     }
 
-    private function getSquare(int $row, int $column): Square
+    private function getSquare(Coordinate $coordinates): Square
     {
-        return $this->squares[$row][$column];
+        return $this->squares[$coordinates->getRow()][$coordinates->getColumn()];
     }
 
     private function checkMarkerMatchesByCoordinates(array $coordinates): ?Marker
@@ -123,7 +83,7 @@ class Board
         $markers = [];
 
         foreach ($coordinates as $coordinate) {
-            $markers[] = $this->getSquare($coordinate[0], $coordinate[1])->getMarker();
+            $markers[] = $this->getSquare($coordinate)->getMarker();
         }
 
         if ($markers[0] === $markers[1] && $markers[0] === $markers[2]) {

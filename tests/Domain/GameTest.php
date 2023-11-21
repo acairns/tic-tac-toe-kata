@@ -4,6 +4,7 @@ namespace Tests\AndrewCairns\Tictactoe\Domain;
 
 use AndrewCairns\Tictactoe\Domain\Game;
 use AndrewCairns\Tictactoe\Domain\Marker;
+use AndrewCairns\Tictactoe\Domain\Coordinate;
 use PHPUnit\Framework\TestCase;
 use Tests\AndrewCairns\Tictactoe\CanAssertAttributes;
 
@@ -17,7 +18,7 @@ class GameTest extends TestCase
 
         $this->assertTurn($game, Marker::X);
 
-        $game->takeTurn(1, 1);
+        $game->takeTurn(new Coordinate(1, 1));
 
         $this->assertTurn($game, Marker::O);
     }
@@ -27,23 +28,23 @@ class GameTest extends TestCase
         $game = new Game();
 
         $this->assertFalse(
-            $game->takeTurn(0, 0)
+            $game->takeTurn(new Coordinate(0, 0))
         );
 
         $this->assertFalse(
-            $game->takeTurn(1, 0)
+            $game->takeTurn(new Coordinate(1, 0))
         );
 
         $this->assertFalse(
-            $game->takeTurn(0, 1)
+            $game->takeTurn(new Coordinate(0, 1))
         );
 
         $this->assertFalse(
-            $game->takeTurn(1, 1)
+            $game->takeTurn(new Coordinate(1, 1))
         );
 
         $this->assertTrue(
-            $game->takeTurn(0, 2)
+            $game->takeTurn(new Coordinate(0, 2))
         );
     }
 
